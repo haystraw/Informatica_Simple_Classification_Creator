@@ -1,0 +1,13 @@
+{
+    "inclusionRule": "LOWER(NAME) LIKE '%mail%' OR (size(filter(FREQUENT_VALUES, v -> LOWER(v) RLIKE '^[-a-z0-9~!$%^&*_=+}{\\'?]+(\\.[-a-z0-9~!$%^&*_=+}{\\'?]+)*@([a-z0-9_][-a-z0-9_]*(\\.[-a-z0-9_]+)*\\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|in|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}))(:[0-9]{1,5})?$')) / size(FREQUENT_VALUES)) >= 0.8f",
+    "name": "Email - Test",
+    "description": "Email Test Classification",
+    "sensitivity": "MEDIUM",
+    "classificationType": "DATA_ELEMENT",
+    "origin": "USER_DEFINED",
+    "expressionContext": {
+        "constants": null,
+        "lookupTableReferences": null
+    },
+    "expressionMode": "ADVANCED"
+}
