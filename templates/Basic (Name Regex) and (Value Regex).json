@@ -7,22 +7,7 @@
             "operator":"RLIKE",
             "valueType":"JAVA_REGEX",
             "values":[
-               ".*last.*name.*"
-            ],
-            "conformance":null
-         }
-      },
-      {
-         "type":"AND"
-      },
-      {
-         "type":"SIMPLE_PREDICATE",
-         "predicateValue":{
-            "attribute":"INFERRED_DATATYPE",
-            "operator":"==",
-            "valueType":"ENUM",
-            "values":[
-               "STRING"
+               "{Name Regex}"
             ],
             "conformance":null
          }
@@ -37,15 +22,15 @@
             "operator":"RLIKE",
             "valueType":"JAVA_REGEX",
             "values":[
-               "[a-zA-Z]"
+               "{Value Regex}"
             ],
-            "conformance":"0.9",
+            "conformance":"{Value Conformance}",
             "weightedConformance":true
          }
       }
    ],
-   "name":"last_name_fouad",
-   "description":"",
+   "name":"{Classification Name}",
+   "description":"{Classification Description}",
    "classificationType":"DATA_ELEMENT",
    "updatedBy":"",
    "updatedByName":"",
@@ -56,5 +41,5 @@
       ]
    },
    "expressionMode":"BASIC",
-   "sensitivity":"HIGH"
+   "sensitivity":"{Sensitivity Level}"
 }

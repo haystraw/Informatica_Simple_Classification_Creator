@@ -10,7 +10,9 @@ default_user="shayes_compass"
 default_pwd="Infa2024!"
 
 
-prompt_for_login_info = True
+prompt_for_login_info = False
+pause_before_loading = False
+create_payloads_only = False
 
 
 # Paths
@@ -49,7 +51,8 @@ def create_payloads():
             template_json_str = json.dumps(template_data)
             for key, value in row.items():
                 placeholder = "{"+key+"}"  # Format as placeholder (e.g., {Classification Name})
-                template_json_str = template_json_str.replace(placeholder, value).replace('\\', '\\\\')
+                formated_value = value.replace('\\', '\\\\')
+                template_json_str = template_json_str.replace(placeholder, formated_value)
 
             # Parse the updated JSON string back to a dictionary
             modified_data = json.loads(template_json_str)
@@ -85,7 +88,7 @@ def getCredentials():
             iics_user = default_user
         else:
             iics_user = input(f"Enter username (default : {default_user}): ") or default_user
-        if len(iics_pwd) > 1:
+        if len(default_pwd) > 1:
             iics_pwd = default_pwd
         else:
             iics_pwd=getpass.getpass("Enter password: ") or default_pwd   
@@ -136,11 +139,15 @@ def load_classification_file(file_location):
             print(f"INFO: Loaded \"{file_name}\" successfully")
 
 
-getCredentials()
+if not create_payloads_only:
+    getCredentials()
 create_payloads()
-login()
-print(f"INFO: Loading Files...")
-for filename in os.listdir(payloads_folder):
-    # Check if it is a file (not a subdirectory)
-    if os.path.isfile(os.path.join(payloads_folder, filename)):
-        load_classification_file(os.path.join(payloads_folder, filename))
+if not create_payloads_only:
+    login()
+    if pause_before_loading:
+        input(f"Press any Key to begin Loading...")
+    print(f"INFO: Loading Files...")
+    for filename in os.listdir(payloads_folder):
+        # Check if it is a file (not a subdirectory)
+        if os.path.isfile(os.path.join(payloads_folder, filename)):
+            load_classification_file(os.path.join(payloads_folder, filename))
