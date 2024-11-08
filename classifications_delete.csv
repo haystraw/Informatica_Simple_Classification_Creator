@@ -1,0 +1,7 @@
+Classification Name,Action
+PII (Entity Classification),DELETE
+Email - (Advanced),DELETE
+Email - (basic Regex),DELETE
+Email - (with whitelist),DELETE
+Email - (with blacklist),DELETE
+Placeholder Classification (Empty),DELETE
