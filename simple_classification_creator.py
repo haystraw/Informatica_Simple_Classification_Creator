@@ -5,12 +5,19 @@ import requests
 import getpass
 from datetime import datetime
 
+version = 20241107
+
+'''
+pip install requests
+'''
+
+
 default_pod="dmp-us"        
 default_user="shayes_compass"
-default_pwd="Infa2024!"
+default_pwd=""
 
 
-prompt_for_login_info = False
+prompt_for_login_info = True
 pause_before_loading = False
 create_payloads_only = False
 
@@ -25,6 +32,39 @@ payloads_folder = f'./payloads/payloads_{timestamp}'
 
 # Ensure the payloads directory exists
 os.makedirs(payloads_folder, exist_ok=True)
+
+def generate_template_array(template_name, placeholder_name, values):
+    # Path to the template JSON file
+    template_path = os.path.join(templates_folder, f"{template_name}.json")
+    
+    # Check if the template exists
+    if not os.path.exists(template_path):
+        print(f"ERROR: Template {template_name}.json not found in {templates_folder}.")
+        return []
+    
+    # Load the template JSON
+    with open(template_path, 'r') as template_file:
+        template_data = json.load(template_file)
+    
+    # Split the comma-separated values and trim whitespace
+    values_list = [value.strip() for value in values.split(',')]
+    
+    # Generate an array of customized template items
+    generated_array = []
+    for value in values_list:
+        # Convert the template to a string to replace placeholders
+        template_str = json.dumps(template_data)
+        placeholder = "{"+placeholder_name+"}"
+        # Replace the placeholder with the current value
+        formated_value = value.replace('\\', '\\\\')
+        customized_template_str = template_str.replace(placeholder, formated_value)
+        
+        # Convert back to a JSON object and add to the array
+        customized_template_data = json.loads(customized_template_str)
+        generated_array.append(customized_template_data)
+    
+    return generated_array
+
 
 # Read the CSV file
 def create_payloads():
@@ -45,24 +85,35 @@ def create_payloads():
                 continue
 
             with open(template_path, 'r') as template_file:
-                template_data = json.load(template_file)
+                template_json_str = template_file.read()
+                ## template_data = json.load(template_file)
 
             # Replace placeholders in the JSON template with CSV row data
-            template_json_str = json.dumps(template_data)
+            ## template_json_str = json.dumps(template_data)
             for key, value in row.items():
                 placeholder = "{"+key+"}"  # Format as placeholder (e.g., {Classification Name})
                 formated_value = value.replace('\\', '\\\\')
+                
+                if ":" in key:
+                    
+                    array_template = key.split(":")[0]
+                    array_placeholder = key.split(":")[1]
+                    array_value = generate_template_array(array_template, array_placeholder, formated_value)
+                    formated_value = json.dumps(array_value)  
+
                 template_json_str = template_json_str.replace(placeholder, formated_value)
 
             # Parse the updated JSON string back to a dictionary
-            modified_data = json.loads(template_json_str)
+            ## modified_data = json.loads(template_json_str)
+            
 
             # Construct the payload file path with the classification name
             payload_file_path = os.path.join(payloads_folder, f"{classification_name}.json")
 
             # Write the modified JSON data to a new file in the payloads folder
             with open(payload_file_path, 'w') as payload_file:
-                json.dump(modified_data, payload_file, indent=4)
+                payload_file.write(template_json_str)
+                ## json.dump(modified_data, payload_file, indent=4)
 
             print(f"INFO: Created file: {payload_file_path}")
 

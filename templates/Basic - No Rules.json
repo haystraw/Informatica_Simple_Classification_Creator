@@ -1,0 +1,14 @@
+{
+   "name":"{Classification Name}",
+   "description":"{Classification Description}",
+   "sensitivity":"NONE",
+   "classificationType":"DATA_ELEMENT",
+   "origin":"USER_DEFINED",
+   "expressionContext":{
+      "constants":null,
+      "lookupTableReferences":null
+   },
+   "expressionMode":"NONE",
+   "inclusionRule":null,
+   "basicExpressionElements":null
+}
