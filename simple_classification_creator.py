@@ -4,9 +4,10 @@ import json
 import requests
 import getpass
 import sys
+import re
 from datetime import datetime, timedelta
 
-version = 20241108
+version = 20241119
 
 '''
 pip install requests
@@ -217,7 +218,8 @@ def create_payloads():
             
 
             # Construct the payload file path with the classification name
-            payload_file_path = os.path.join(payloads_folder, f"{classification_name}.json")
+            filename = re.sub(r'[<>:"/\\|?*\x00-\x1F]', '_', classification_name)
+            payload_file_path = os.path.join(payloads_folder, f"{filename}.json")
 
             # Write the modified JSON data to a new file in the payloads folder
             with open(payload_file_path, 'w') as payload_file:
@@ -236,6 +238,30 @@ def delete_classifications():
             action = row.get('Action', 'NOTHING')
             if action == 'DELETE':
                 delete_classification(classification_name)
+                
+def load_credentials_from_home():
+    global default_user, default_pwd, default_pod
+    
+    # Define the path to the credentials file in the user's home directory
+    credentials_path = os.path.join(os.path.expanduser("~"), ".informatica_cdgc", "credentials.json")
+    
+    # Check if the file exists
+    if os.path.exists(credentials_path):
+        with open(credentials_path, 'r') as file:
+            try:
+                # Load the JSON data
+                credentials = json.load(file)
+                
+                # Set each credential individually if it exists in the file
+                if 'default_user' in credentials:
+                    default_user = credentials['default_user']
+                if 'default_pwd' in credentials:
+                    default_pwd = credentials['default_pwd']
+                if 'default_pod' in credentials:
+                    default_pod = credentials['default_pod']
+                
+            except json.JSONDecodeError:
+                pass
 
 def getCredentials():
     global pod
@@ -243,6 +269,8 @@ def getCredentials():
     global iics_pwd
     global iics_url
     global cdgc_url
+    
+    load_credentials_from_home()
 
     if any(var not in globals() for var in ['pod', 'iics_user', 'iics_pwd', 'iics_url', 'cdgc_url']):
         if prompt_for_login_info == True:
