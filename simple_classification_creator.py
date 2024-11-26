@@ -5,9 +5,11 @@ import requests
 import getpass
 import sys
 import re
+import configparser
 from datetime import datetime, timedelta
 
-version = 20241119
+version = 20241125
+print(f"INFO: Simple Classification Creator {version}")
 
 '''
 pip install requests
@@ -15,33 +17,90 @@ pip install requests
 
 
 default_pod="dmp-us"        
-default_user="shayes_compass"
+default_user=""
 default_pwd=""
 
 
 prompt_for_login_info = True
-pause_before_loading = False
+pause_before_loading = True
 create_payloads_only = False
 when_extracting_fetch_details = True
 show_raw_errors = False
+pause_at_end = True
 
 
 # Paths
-csv_file_path = './classifications.csv'
-templates_folder = './templates'
-extracts_folder = './extracts'
+script_location = os.path.dirname(os.path.abspath(sys.executable if getattr(sys, 'frozen', False) else __file__))
+csv_file_path = script_location+'/xxxxxxxxxxxxxxxxxxxxx.csv'
+templates_folder = script_location+'/templates'
+extracts_folder = script_location+'/extracts'
 current_classifications_file = "current_classifications.json"
 current_classifications_details_file = "current_classifications_details.json"
 name_to_id_tokens = ["Classification Members"]
 
-default_delete_csv_file = "./classifications_delete.csv"
+default_delete_csv_file = script_location+"/xxxxxxxxxxxxxxx.csv"
 
 # Get the current timestamp for folder creation
 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-payloads_folder = f'./payloads/payloads_{timestamp}'
+payloads_folder = f'{script_location}/payloads/payloads_{timestamp}'
 
 # Ensure the payloads directory exists
 os.makedirs(payloads_folder, exist_ok=True)
+
+total_payloads_to_load = []
+
+def select_recent_csv(directory):
+    """
+    Lists CSV files in a given directory, sorted by most recent modification time,
+    prompts the user to select one, and returns the path for the selected file.
+
+    Args:
+        directory (str): The directory to search for CSV files.
+
+    Returns:
+        str: The full path of the selected CSV file, or None if no valid file is selected.
+    """
+    # Expand user directory if ~ is used
+    directory = os.path.expanduser(directory)
+
+    # Check if the directory exists
+    if not os.path.isdir(directory):
+        print(f"Directory not found: {directory}")
+        return None
+
+    # List all CSV files in the directory
+    csv_files = [
+        os.path.join(directory, file)
+        for file in os.listdir(directory)
+        if file.endswith('.csv')
+    ]
+
+    # Check if any CSV files were found
+    if not csv_files:
+        print(f"No CSV files found in the directory: {directory}")
+        return None
+
+    # Sort the files by modification time (most recent first)
+    csv_files.sort(key=os.path.getmtime, reverse=True)
+
+    # Display the files to the user with their modification times
+    print("Select a CSV file:")
+    for i, file in enumerate(csv_files, start=1):
+        ## mod_time = datetime.datetime.fromtimestamp(os.path.getmtime(file))
+        print(f"    {i}. {os.path.basename(file)}")
+
+    # Prompt the user to select a file
+    while True:
+        try:
+            choice = int(input(f"Enter the number of the file to select (1-{len(csv_files)}): "))
+            if 1 <= choice <= len(csv_files):
+                selected_file = csv_files[choice - 1]
+                return selected_file
+            else:
+                print(f"Invalid choice. Please select a number between 1 and {len(csv_files)}.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
 
 def process_json_error(text):
     result_text = text
@@ -179,6 +238,7 @@ def generate_template_array(template_name, placeholder_name, values):
 
 # Read the CSV file
 def create_payloads():
+    global total_payloads_to_load
     with open(csv_file_path, mode='r') as csvfile:
         reader = csv.DictReader(csvfile)
 
@@ -225,10 +285,13 @@ def create_payloads():
             with open(payload_file_path, 'w') as payload_file:
                 payload_file.write(template_json_str)
                 ## json.dump(modified_data, payload_file, indent=4)
-
-            print(f"INFO: Created file: {payload_file_path}")
+            last_payload_path_part = os.path.basename(payloads_folder)
+            print(f"INFO: Created file: {last_payload_path_part}/{filename}.json")
+            total_payloads_to_load.append(payload_file_path)
 
 def delete_classifications():
+    global default_delete_csv_file
+
     print(f"INFO: Reading file for classifications to delete")
     with open(default_delete_csv_file, mode='r') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -241,27 +304,68 @@ def delete_classifications():
                 
 def load_credentials_from_home():
     global default_user, default_pwd, default_pod
-    
-    # Define the path to the credentials file in the user's home directory
-    credentials_path = os.path.join(os.path.expanduser("~"), ".informatica_cdgc", "credentials.json")
-    
-    # Check if the file exists
-    if os.path.exists(credentials_path):
-        with open(credentials_path, 'r') as file:
+
+    def get_informatica_credentials():
+        credentials_path = os.path.join(os.path.expanduser("~"), ".informatica_cdgc", "credentials")
+        if not os.path.exists(credentials_path):
+            print(f"Credentials file not found: {credentials_path}")
+            return None
+
+        config = configparser.ConfigParser()
+        config.read(credentials_path)
+
+        if "default" in config:
+            return dict(config["default"])
+
+        # If no default section, list available profiles and prompt user to select one
+        profiles = config.sections()
+        if not profiles:
+            return None
+
+        print("INFO: No 'default' profile found. Please select a profile:")
+        for i, profile in enumerate(profiles, start=1):
+            print(f"    {i}. {profile}")
+
+        # Prompt user for selection
+        while True:
             try:
-                # Load the JSON data
-                credentials = json.load(file)
-                
-                # Set each credential individually if it exists in the file
-                if 'default_user' in credentials:
-                    default_user = credentials['default_user']
-                if 'default_pwd' in credentials:
-                    default_pwd = credentials['default_pwd']
-                if 'default_pod' in credentials:
-                    default_pod = credentials['default_pod']
-                
-            except json.JSONDecodeError:
-                pass
+                choice = int(input("Enter the number of the profile to use: "))
+                if 1 <= choice <= len(profiles):
+                    selected_profile = profiles[choice - 1]
+                    print(f"Using credentials from the '{selected_profile}' profile.")
+                    return dict(config[selected_profile])
+                else:
+                    print(f"INFO: Invalid choice. Please select a number between 1 and {len(profiles)}.")
+            except ValueError:
+                print("INFO: Invalid input. Please enter a valid number.")
+
+    if len(default_user) < 1 or len(default_pwd) < 1 or len(default_pod) < 1:
+        credentials_dict = get_informatica_credentials()
+        if credentials_dict:
+            default_user = credentials_dict.get('user')
+            default_pwd = credentials_dict.get('pwd')
+            default_pod = credentials_dict.get('pod')
+        else:
+            # Define the path to the credentials file in the user's home directory
+            credentials_path = os.path.join(os.path.expanduser("~"), ".informatica_cdgc", "credentials.json")
+            
+            # Check if the file exists
+            if os.path.exists(credentials_path):
+                with open(credentials_path, 'r') as file:
+                    try:
+                        # Load the JSON data
+                        credentials = json.load(file)
+                        
+                        # Set each credential individually if it exists in the file
+                        if 'default_user' in credentials:
+                            default_user = credentials['default_user']
+                        if 'default_pwd' in credentials:
+                            default_pwd = credentials['default_pwd']
+                        if 'default_pod' in credentials:
+                            default_pod = credentials['default_pod']
+                        
+                    except json.JSONDecodeError:
+                        pass
 
 def getCredentials():
     global pod
@@ -354,25 +458,44 @@ def delete_classification(classification_name):
     else:
         print(f"INFO:  \"{classification_name}\" deletion job started successfully")
 
-if len(sys.argv) > 1:
-    if sys.argv[1].lower() == 'extract':
-        getClassifications()
-        quit()
-    elif sys.argv[1].lower() == 'delete':
-        if len(sys.argv) > 2:
-            default_delete_csv_file = sys.argv[2]
-        delete_classifications()
-        quit()    
-    else:
-        csv_file_path = sys.argv[1]
+
+def main():
+    global csv_file_path, total_payloads_to_load, default_delete_csv_file
+    if len(sys.argv) > 1:
+        if sys.argv[1].lower() == 'extract':
+            getClassifications()
+            if pause_at_end:
+                input(f"Press any Key to exit...")
+            quit()
+        elif sys.argv[1].lower() == 'delete':
+            print(f"INFO: Preparing to BULK DELETE Classifications")
+            if len(sys.argv) > 2:
+                default_delete_csv_file = sys.argv[2]
+            if not os.path.exists(default_delete_csv_file):
+                default_delete_csv_file = select_recent_csv(script_location)                
+            delete_classifications()
+            if pause_at_end:
+                input(f"Press any Key to exit...")
+            quit()    
+        else:
+            csv_file_path = sys.argv[1]
+
+    if not os.path.exists(csv_file_path):
+        csv_file_path = select_recent_csv(script_location)
 
 
-create_payloads()
-if not create_payloads_only:
-    if pause_before_loading:
-        input(f"Press any Key to begin Loading...")
-    print(f"INFO: Loading Files...")
-    for filename in os.listdir(payloads_folder):
-        # Check if it is a file (not a subdirectory)
-        if os.path.isfile(os.path.join(payloads_folder, filename)):
-            load_classification_file(os.path.join(payloads_folder, filename))
+    create_payloads()
+    if not create_payloads_only:
+        if pause_before_loading:
+            input(f"Press any Key to begin Loading...")
+        print(f"INFO: Loading Files...")
+        for filename in total_payloads_to_load:
+            # Check if it is a file (not a subdirectory)
+            if os.path.isfile(os.path.join(payloads_folder, filename)):
+                load_classification_file(os.path.join(payloads_folder, filename))
+    if pause_at_end:
+        input(f"Press any Key to exit...")
+
+
+if __name__ == "__main__":
+    main()                
