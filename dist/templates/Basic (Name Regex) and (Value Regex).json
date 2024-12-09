@@ -1,0 +1,45 @@
+{
+   "basicExpressionElements":[
+      {
+         "type":"SIMPLE_PREDICATE",
+         "predicateValue":{
+            "attribute":"NAME",
+            "operator":"RLIKE",
+            "valueType":"JAVA_REGEX",
+            "values":[
+               "{Name Regex}"
+            ],
+            "conformance":null
+         }
+      },
+      {
+         "type":"AND"
+      },
+      {
+         "type":"SIMPLE_PREDICATE",
+         "predicateValue":{
+            "attribute":"FREQUENT_VALUES",
+            "operator":"RLIKE",
+            "valueType":"JAVA_REGEX",
+            "values":[
+               "{Value Regex}"
+            ],
+            "conformance":"{Value Conformance}",
+            "weightedConformance":true
+         }
+      }
+   ],
+   "name":"{Classification Name}",
+   "description":"{Classification Description}",
+   "classificationType":"DATA_ELEMENT",
+   "updatedBy":"",
+   "updatedByName":"",
+   "updateTime":0,
+   "expressionContext":{
+      "constants":[
+         
+      ]
+   },
+   "expressionMode":"BASIC",
+   "sensitivity":"{Sensitivity Level}"
+}

@@ -1,0 +1,13 @@
+{
+  "inclusionRule": "( NAME IN {Lookup Table and Column} )  OR\r\n( NAME RLIKE '{Name Regex}' \r\n AND (aggregate(filter(VALUE_FREQUENCIES, v -> v.VALUE RLIKE '{Value Regex}'),0D,(acc, v) -> acc + v.FREQUENCY_PERCENTAGE) / aggregate(VALUE_FREQUENCIES, 0D, (acc, v) -> acc + v.FREQUENCY_PERCENTAGE)) >= {Value Conformance}d )",
+  "name": "{Classification Name}",
+  "description": "{Classification Description}",
+  "sensitivity": "{Sensitivity Level}",
+  "classificationType": "DATA_ELEMENT",
+  "origin": "USER_DEFINED",
+  "expressionContext": {
+    "constants": null,
+    "lookupTableReferences": null
+  },
+  "expressionMode": "ADVANCED"
+}

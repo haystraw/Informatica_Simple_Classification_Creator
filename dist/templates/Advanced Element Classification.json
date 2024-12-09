@@ -1,0 +1,13 @@
+{
+  "inclusionRule": "{Advanced Rule}",
+  "name": "{Classification Name}",
+  "description": "{Classification Description}",
+  "sensitivity": "{Sensitivity Level}",
+  "classificationType": "DATA_ELEMENT",
+  "origin": "USER_DEFINED",
+  "expressionContext": {
+    "constants": null,
+    "lookupTableReferences": null
+  },
+  "expressionMode": "ADVANCED"
+}

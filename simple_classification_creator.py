@@ -6,13 +6,60 @@ import getpass
 import sys
 import re
 import configparser
+import argparse
+import ast
 from datetime import datetime, timedelta
 
-version = 20241125
+version = 20241209
 print(f"INFO: Simple Classification Creator {version}")
+help_message = '''
+Optionally, you can set parameters:
 
-'''
-pip install requests
+   --default_user
+        You can specify the username to use. if you do now specify one, it will look in the
+        ~/.informatica_cdgc/credentials file (as shown below)
+        Example:
+            --default_user=shayes_compass
+
+   --default_pwd
+        You can specify the password to use. if you do now specify one, it will look in the
+        ~/.informatica_cdgc/credentials file (as shown below)
+        Example:
+            --default_pwd=12345
+
+   --default_pod
+        You can specify the pod to use. if you do now specify one, it will look in the
+        ~/.informatica_cdgc/credentials file (as shown below)
+        Typically this "pod" can be shown in the url: for example: "dm-us"
+        Example:
+            --default_pwd=dm-us  
+
+   --csv_file
+        You can specify the config csv file to use directly, by setting it here. 
+        It will default to the directory where the script/exe file resides.
+        Example:
+            --csv_file=my_classifications.csv
+
+   --csv_file_path
+         You can specify the config csv file to use directly, by setting it here. 
+        Setting it with this option, will allow you to specify the full path (use linux forward slashes)
+        Example:
+            --csv_file_path=c:/junk/my_classifications.csv       
+
+Direct Command line options:
+   delete
+        Use this command line argument to specify delete classifications action.
+
+   extract
+        Use this command to simply extract user created classifications. Use this to create 
+        additional templates. The "details" that it downloads will provide the correct syntax for
+        templates.
+
+Python prerequisites:
+    If needed, install the python prerequisites:  pip install requests argparse requests_toolbelt
+    If executing using the Windows exe, all prerequisites should be covered.
+    Ensure you have write access to the folder which the pythong script/binary resides
+
 '''
 
 
@@ -32,6 +79,7 @@ pause_at_end = True
 # Paths
 script_location = os.path.dirname(os.path.abspath(sys.executable if getattr(sys, 'frozen', False) else __file__))
 csv_file_path = script_location+'/xxxxxxxxxxxxxxxxxxxxx.csv'
+csv_file = ''
 templates_folder = script_location+'/templates'
 extracts_folder = script_location+'/extracts'
 current_classifications_file = "current_classifications.json"
@@ -48,6 +96,43 @@ payloads_folder = f'{script_location}/payloads/payloads_{timestamp}'
 os.makedirs(payloads_folder, exist_ok=True)
 
 total_payloads_to_load = []
+
+def parse_parameters():
+    # Check for --help first
+    if '--help' in sys.argv:
+        print(help_message)
+        programPause = input("Press the <ENTER> key to exit...")
+        sys.exit(0)
+
+    parser = argparse.ArgumentParser(description="Dynamically set variables from command-line arguments.")
+    args, unknown_args = parser.parse_known_args()
+
+    for arg in unknown_args:
+        if arg.startswith("--") and "=" in arg:
+            key, value = arg[2:].split("=", 1)  # Remove "--" and split into key and value
+            try:
+                # Safely parse value as Python object (list, dict, etc.)
+                value = ast.literal_eval(value)
+            except (ValueError, SyntaxError):
+                pass  # Leave value as-is if parsing fails
+
+            # Handle appending to arrays or updating dictionaries
+            if key in globals():
+                existing_value = globals()[key]
+                if isinstance(existing_value, list) and isinstance(value, list):
+                    ## If what was passed is an array, we'll append to the array
+                    existing_value.extend(value)  # Append to the existing array
+                elif isinstance(existing_value, dict) and isinstance(value, dict):
+                    ## If what was passed is a dict, we'll add to the dict
+                    existing_value.update(value)  # Add or update keys in the dictionary
+                else:
+                    ## Otherwise, it's an ordinary variable. replace it
+                    globals()[key] = value  # Replace for other types
+
+            else:
+                ## It's a new variable. Create an ordinary variable.
+                globals()[key] = value  # Set as a new variable
+
 
 def select_recent_csv(directory):
     """
@@ -461,6 +546,12 @@ def delete_classification(classification_name):
 
 def main():
     global csv_file_path, total_payloads_to_load, default_delete_csv_file
+
+    parse_parameters()
+    if len(csv_file) > 2:
+
+        csv_file_path = script_location+'/'+csv_file
+
     if len(sys.argv) > 1:
         if sys.argv[1].lower() == 'extract':
             getClassifications()
@@ -477,7 +568,7 @@ def main():
             if pause_at_end:
                 input(f"Press any Key to exit...")
             quit()    
-        else:
+        elif os.path.exists(sys.argv[1]):
             csv_file_path = sys.argv[1]
 
     if not os.path.exists(csv_file_path):
