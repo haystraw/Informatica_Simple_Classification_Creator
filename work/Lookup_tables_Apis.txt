@@ -1,0 +1,705 @@
+
+
+#####################################################################
+## Create a Lookup Table
+#####################################################################
+:authority: cdgc-api.dmp-us.informaticacloud.com
+:method: POST
+:path: /ccgf-metadata-discovery/api/v1/lookuptables/import
+:scheme: https
+accept: application/json, text/plain, */*
+accept-encoding: gzip, deflate, br, zstd
+accept-language: en-US,en;q=0.9
+authorization: Bearer eyJraWQiOiI0RU9FYmJaTEtXQ2V6RXpTZk5WUUtDIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJ1bmlxdWVfaWQiOiIkMmEkMDckT050WGZPdy9WMHVsYUoyZkFtdTRHdXdyQlR5bE9pNGtVMXRvQzFRZ2lpMXZXOFZQYWxKTWUiLCJ1c2VyX2ZuYW1lIjoiU2NvdHQiLCJ1c2VyX25hbWUiOiJzaGF5ZXNfY29tcGFzcyIsImlzcyI6Imh0dHBzOi8vZG1wLXVzLmluZm9ybWF0aWNhY2xvdWQuY29tL2lkZW50aXR5LXNlcnZpY2UiLCJub25jZSI6Im1UVjJ2bHdFamZnZ3hCdyIsInVzZXJfbG5hbWUiOiJIYXllcyIsImNsaWVudF9pZCI6ImNkbGdfbWdtdF9hcHAiLCJhdWQiOiJjZGxnX21nbXQiLCJ1c2VyX29yZ19pZCI6ImM1UHk3TjRrZlNBa2hLN3VvNXNsNnUiLCJ1c2VyX2lkIjoiMWZNQ3lmNWhma2ZsdnNFcm1UVENhZyIsIm9yZ19pZCI6ImM1UHk3TjRrZlNBa2hLN3VvNXNsNnUiLCJleHAiOjE3MzU1ODAwNDcsIm9yZ19uYW1lIjoiTkFER1NBIEhheWVzIENvbXBhc3MiLCJpYXQiOjE3MzU1NzgyNDcsImp0aSI6IjlrQ1BlbnY2bndQalZMZURaTHU1WVIifQ.0YxoAiR1W61HqgmcDPjLaYApPrgSPO1vAgVtppBMYUaYP7CF2ibTRfBw8SsE8oxdlNmz-Sn1CmfRlftkQbLgqA
+content-length: 822
+content-type: multipart/form-data; boundary=----WebKitFormBoundaryI6wVVkE1z3WI1k8B
+cookie: USER_SESSION=9fPOODKww9pldmJCg18PMl; XSRF_TOKEN=4HgwFOZHI1ceboBcxwOaki
+correlation-id: 146c3dd2-8ed2-4a52-a3ba-f35281f9ba13
+operation-id: 146c3dd2-8ed2-4a52-a3ba-f35281f9ba13
+origin: https://mcc.dmp-us.informaticacloud.com
+priority: u=1, i
+referer: https://mcc.dmp-us.informaticacloud.com/
+sec-ch-ua: "Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+sec-fetch-dest: empty
+sec-fetch-mode: cors
+sec-fetch-site: same-site
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+x-infa-org-id: c5Py7N4kfSAkhK7uo5sl6u
+x-infa-product-id: MCC
+x-infa-tg-id: 7fed42dd-da0b-4cef-bf02-11ca737c671f
+x-requested-with: XMLHttpRequest
+x_infa_log_ctx: req_id=146c3dd2-8ed2-4a52-a3ba-f35281f9ba13
+xsrf_token: 4HgwFOZHI1ceboBcxwOaki
+
+Form Data:
+description: 
+file: (binary)
+codepage: UTF-8
+name: Test_lookup
+
+Response:
+{
+    "id": "061220da-d60b-44b4-909f-64c64f8cf73d",
+    "name": "Test_lookup",
+    "normalizedName": "test_lookup",
+    "description": null,
+    "filename": "test_lookup.csv",
+    "publishedFilename": null,
+    "lastJobId": "72c23e27-b12c-43ce-bec9-c8e0953d66ef",
+    "status": "UNPUBLISHED",
+    "lastJobStatus": "IN_PROGRESS",
+    "previewStatus": "OUT_OF_DATE",
+    "publishedValues": null,
+    "uploadTime": null,
+    "uploadedBy": null,
+    "origin": "USER_DEFINED"
+}
+
+#####################################################################
+## Checking status of running job
+#####################################################################
+:authority: cdgc-api.dmp-us.informaticacloud.com
+:method: GET
+:path: /ccgf-orchestration-management-api-server/api/v1/jobs/72c23e27-b12c-43ce-bec9-c8e0953d66ef?aggregateResourceUsage=false&expandChildren=
+:scheme: https
+accept: application/json
+accept-encoding: gzip, deflate, br, zstd
+accept-language: en-US,en;q=0.9
+authorization: Bearer eyJraWQiOiI0RU9FYmJaTEtXQ2V6RXpTZk5WUUtDIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJ1bmlxdWVfaWQiOiIkMmEkMDckT050WGZPdy9WMHVsYUoyZkFtdTRHdXdyQlR5bE9pNGtVMXRvQzFRZ2lpMXZXOFZQYWxKTWUiLCJ1c2VyX2ZuYW1lIjoiU2NvdHQiLCJ1c2VyX25hbWUiOiJzaGF5ZXNfY29tcGFzcyIsImlzcyI6Imh0dHBzOi8vZG1wLXVzLmluZm9ybWF0aWNhY2xvdWQuY29tL2lkZW50aXR5LXNlcnZpY2UiLCJub25jZSI6Im1UVjJ2bHdFamZnZ3hCdyIsInVzZXJfbG5hbWUiOiJIYXllcyIsImNsaWVudF9pZCI6ImNkbGdfbWdtdF9hcHAiLCJhdWQiOiJjZGxnX21nbXQiLCJ1c2VyX29yZ19pZCI6ImM1UHk3TjRrZlNBa2hLN3VvNXNsNnUiLCJ1c2VyX2lkIjoiMWZNQ3lmNWhma2ZsdnNFcm1UVENhZyIsIm9yZ19pZCI6ImM1UHk3TjRrZlNBa2hLN3VvNXNsNnUiLCJleHAiOjE3MzU1ODAwNDcsIm9yZ19uYW1lIjoiTkFER1NBIEhheWVzIENvbXBhc3MiLCJpYXQiOjE3MzU1NzgyNDcsImp0aSI6IjlrQ1BlbnY2bndQalZMZURaTHU1WVIifQ.0YxoAiR1W61HqgmcDPjLaYApPrgSPO1vAgVtppBMYUaYP7CF2ibTRfBw8SsE8oxdlNmz-Sn1CmfRlftkQbLgqA
+cookie: USER_SESSION=9fPOODKww9pldmJCg18PMl; XSRF_TOKEN=4HgwFOZHI1ceboBcxwOaki
+correlation-id: e5487f9d-77fc-4bbc-ae0b-ebc6976aa9a9
+operation-id: e5487f9d-77fc-4bbc-ae0b-ebc6976aa9a9
+origin: https://mcc.dmp-us.informaticacloud.com
+priority: u=1, i
+referer: https://mcc.dmp-us.informaticacloud.com/
+sec-ch-ua: "Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+sec-fetch-dest: empty
+sec-fetch-mode: cors
+sec-fetch-site: same-site
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+x-infa-org-id: c5Py7N4kfSAkhK7uo5sl6u
+x-infa-tg-id: 7fed42dd-da0b-4cef-bf02-11ca737c671f
+x-infa-tid: e5487f9d-77fc-4bbc-ae0b-ebc6976aa9a9
+x_infa_log_ctx: req_id=e5487f9d-77fc-4bbc-ae0b-ebc6976aa9a9
+xsrf_token: 4HgwFOZHI1ceboBcxwOaki
+
+Response:
+{
+    "id": "72c23e27-b12c-43ce-bec9-c8e0953d66ef",
+    "name": "Test_lookup Import",
+    "type": "Lookup Table Import",
+    "status": "RUNNING",
+    "lifecycleStatus": "RUNNING",
+    "startTime": "2024-12-30T17:16:34Z",
+    "endTime": null,
+    "createdBy": "1fMCyf5hfkflvsErmTTCag",
+    "createdByUserName": "shayes_compass",
+    "createdTime": "2024-12-30T17:15:50Z",
+    "updatedBy": "1fMCyf5hfkflvsErmTTCag",
+    "updatedByUserName": "shayes_compass",
+    "updatedTime": "2024-12-30T17:16:34Z",
+    "traceId": "146c3dd2-8ed2-4a52-a3ba-f35281f9ba13",
+    "resourceUsage": null,
+    "inputProperties": [],
+    "outputProperties": [],
+    "allowedOperations": [],
+    "tasks": []
+}
+
+#####################################################################
+## Update a Lookup Table
+#####################################################################
+:authority: cdgc-api.dmp-us.informaticacloud.com
+:method: PUT
+:path: /ccgf-metadata-discovery/api/v1/lookuptables/061220da-d60b-44b4-909f-64c64f8cf73d/import
+:scheme: https
+accept: application/json, text/plain, */*
+accept-encoding: gzip, deflate, br, zstd
+accept-language: en-US,en;q=0.9
+authorization: Bearer eyJraWQiOiI0RU9FYmJaTEtXQ2V6RXpTZk5WUUtDIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJ1bmlxdWVfaWQiOiIkMmEkMDckY3JGSUQyamwxM3UudlY1OGtYSnlLdTRNY2YzWU4wTnVtazRqc3kzVjhIVFNCLnRwT09RVVciLCJ1c2VyX2ZuYW1lIjoiU2NvdHQiLCJ1c2VyX25hbWUiOiJzaGF5ZXNfY29tcGFzcyIsImlzcyI6Imh0dHBzOi8vZG1wLXVzLmluZm9ybWF0aWNhY2xvdWQuY29tL2lkZW50aXR5LXNlcnZpY2UiLCJub25jZSI6ImlTRE5LVG5LYUd5alJ6TCIsInVzZXJfbG5hbWUiOiJIYXllcyIsImNsaWVudF9pZCI6ImNkbGdfbWdtdF9hcHAiLCJhdWQiOiJjZGxnX21nbXQiLCJ1c2VyX29yZ19pZCI6ImM1UHk3TjRrZlNBa2hLN3VvNXNsNnUiLCJ1c2VyX2lkIjoiMWZNQ3lmNWhma2ZsdnNFcm1UVENhZyIsIm9yZ19pZCI6ImM1UHk3TjRrZlNBa2hLN3VvNXNsNnUiLCJleHAiOjE3MzU1ODE1NDgsIm9yZ19uYW1lIjoiTkFER1NBIEhheWVzIENvbXBhc3MiLCJpYXQiOjE3MzU1Nzk3NDgsImp0aSI6IjlrQ1BlbnY2bndQalZMZURaTHU1WVIifQ.Y-7g9LQkauki30n56-9qgWSIayouWnprLChEFxK8839JugcX064LjnVH7ntQm76789YkZgwpVIW7kDK0comOxw
+content-length: 738
+content-type: multipart/form-data; boundary=----WebKitFormBoundaryrUYiJCaB9uB9doXD
+cookie: USER_SESSION=9fPOODKww9pldmJCg18PMl; XSRF_TOKEN=4HgwFOZHI1ceboBcxwOaki
+correlation-id: f4f67f3f-fa24-4a4c-b136-fa385acb318a
+operation-id: f4f67f3f-fa24-4a4c-b136-fa385acb318a
+origin: https://mcc.dmp-us.informaticacloud.com
+priority: u=1, i
+referer: https://mcc.dmp-us.informaticacloud.com/
+sec-ch-ua: "Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+sec-fetch-dest: empty
+sec-fetch-mode: cors
+sec-fetch-site: same-site
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+x-infa-org-id: c5Py7N4kfSAkhK7uo5sl6u
+x-infa-product-id: MCC
+x-infa-tg-id: 7fed42dd-da0b-4cef-bf02-11ca737c671f
+x-requested-with: XMLHttpRequest
+x_infa_log_ctx: req_id=f4f67f3f-fa24-4a4c-b136-fa385acb318a
+xsrf_token: 4HgwFOZHI1ceboBcxwOaki
+
+Response:
+{
+    "id": "061220da-d60b-44b4-909f-64c64f8cf73d",
+    "name": "Test_lookup",
+    "normalizedName": "test_lookup",
+    "description": null,
+    "filename": "test_lookup.csv",
+    "publishedFilename": "test_lookup.csv",
+    "lastJobId": "1a9df0ad-333a-44ab-a0fd-09bd02d963d0",
+    "status": "PUBLISHED",
+    "lastJobStatus": "IN_PROGRESS",
+    "previewStatus": "OUT_OF_DATE",
+    "publishedValues": [
+        {
+            "attributeName": "fieldname",
+            "sampleData": [
+                "cd_wire_acct",
+                "CD_WIRE_ACCT",
+                "id_wire_acct",
+                "ID_WIRE_ACCT",
+                "nbr_bnfcry_acct",
+                "NBR_BNFCRY_ACCT",
+                "nbr_fico_dcsn_lp",
+                "NBR_FICO_DCSN_LP",
+                "nbr_fico_scr",
+                "NBR_FICO_SCR",
+                "nbr_wire_acct",
+                "NBR_WIRE_ACCT",
+                "ssr_no",
+                "SSR_NO",
+                "ssr_no_merg",
+                "SSR_NO_MERG",
+                "text_bnf_acct_trf",
+                "TEXT_BNF_ACCT_TRF",
+                "ind_actv",
+                "IND_ACTV"
+            ]
+        }
+    ],
+    "uploadTime": 1735578950164,
+    "uploadedBy": "shayes_compass",
+    "origin": "USER_DEFINED"
+}
+
+#####################################################################
+## Get Lookup Table Details
+#####################################################################
+:authority: cdgc-api.dmp-us.informaticacloud.com
+:method: GET
+:path: /ccgf-metadata-discovery/api/v1/lookuptables/061220da-d60b-44b4-909f-64c64f8cf73d
+:scheme: https
+accept: application/json, text/plain, */*
+accept-encoding: gzip, deflate, br, zstd
+accept-language: en-US,en;q=0.9
+authorization: Bearer eyJraWQiOiI0RU9FYmJaTEtXQ2V6RXpTZk5WUUtDIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJ1bmlxdWVfaWQiOiIkMmEkMDckQTR1VjNDTEYwNnpxaUtrMGRtMEMyZXY2b2xmVkpZd3dwaWRoVkJXeVp5TUhpRzFwWWFDNzIiLCJ1c2VyX2ZuYW1lIjoiU2NvdHQiLCJ1c2VyX25hbWUiOiJzaGF5ZXNfY29tcGFzcyIsImlzcyI6Imh0dHBzOi8vZG1wLXVzLmluZm9ybWF0aWNhY2xvdWQuY29tL2lkZW50aXR5LXNlcnZpY2UiLCJub25jZSI6Ik5ueEdpOHU0ZjZRd29rcyIsInVzZXJfbG5hbWUiOiJIYXllcyIsImNsaWVudF9pZCI6ImNkbGdfbWdtdF9hcHAiLCJhdWQiOiJjZGxnX21nbXQiLCJ1c2VyX29yZ19pZCI6ImM1UHk3TjRrZlNBa2hLN3VvNXNsNnUiLCJ1c2VyX2lkIjoiMWZNQ3lmNWhma2ZsdnNFcm1UVENhZyIsIm9yZ19pZCI6ImM1UHk3TjRrZlNBa2hLN3VvNXNsNnUiLCJleHAiOjE3MzU1ODIxOTcsIm9yZ19uYW1lIjoiTkFER1NBIEhheWVzIENvbXBhc3MiLCJpYXQiOjE3MzU1ODAzOTcsImp0aSI6IjNHWWxEN1ZwZlFvZWZsSHV5UmJybUsifQ.nEmg344FyPclO8L_1WP-k6S8cv6rRPZBkHc0m6AfsgA77Nb8Nt_7QHfHF3YpMZgmMFWWPsBP1W7DyDBGNk6epQ
+cookie: USER_SESSION=9fPOODKww9pldmJCg18PMl; XSRF_TOKEN=4HgwFOZHI1ceboBcxwOaki
+correlation-id: 070d64d5-9caa-475e-93c0-1f22e04a38b2
+operation-id: 070d64d5-9caa-475e-93c0-1f22e04a38b2
+origin: https://mcc.dmp-us.informaticacloud.com
+priority: u=1, i
+referer: https://mcc.dmp-us.informaticacloud.com/
+sec-ch-ua: "Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+sec-fetch-dest: empty
+sec-fetch-mode: cors
+sec-fetch-site: same-site
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+x-infa-org-id: c5Py7N4kfSAkhK7uo5sl6u
+x-infa-tg-id: 7fed42dd-da0b-4cef-bf02-11ca737c671f
+x-requested-with: XMLHttpRequest
+x_infa_log_ctx: req_id=070d64d5-9caa-475e-93c0-1f22e04a38b2
+xsrf_token: 4HgwFOZHI1ceboBcxwOaki
+
+Response:
+{
+    "id": "061220da-d60b-44b4-909f-64c64f8cf73d",
+    "name": "Test_lookup",
+    "normalizedName": "test_lookup",
+    "description": null,
+    "filename": "test_lookup.csv",
+    "publishedFilename": "test_lookup.csv",
+    "lastJobId": "1a9df0ad-333a-44ab-a0fd-09bd02d963d0",
+    "status": "PUBLISHED",
+    "lastJobStatus": "COMPLETED",
+    "previewStatus": "CURRENT",
+    "publishedValues": [
+        {
+            "attributeName": "fieldname",
+            "sampleData": [
+                "cd_wire_acct",
+                "CD_WIRE_ACCT",
+                "id_wire_acct",
+                "ID_WIRE_ACCT",
+                "nbr_bnfcry_acct",
+                "NBR_BNFCRY_ACCT",
+                "nbr_fico_dcsn_lp",
+                "NBR_FICO_DCSN_LP",
+                "nbr_fico_scr",
+                "NBR_FICO_SCR",
+                "nbr_wire_acct",
+                "NBR_WIRE_ACCT",
+                "ssr_no",
+                "SSR_NO",
+                "ssr_no_merg",
+                "SSR_NO_MERG",
+                "text_bnf_acct_trf",
+                "TEXT_BNF_ACCT_TRF",
+                "ind_actv",
+                "IND_ACTV"
+            ]
+        }
+    ],
+    "uploadTime": 1735579893049,
+    "uploadedBy": "shayes_compass",
+    "origin": "USER_DEFINED"
+}
+
+#####################################################################
+## Get List of Lookup tables
+#####################################################################
+:authority: cdgc-api.dmp-us.informaticacloud.com
+:method: GET
+:path: /ccgf-metadata-discovery/api/v1/lookuptables?pageSize=25&pageNumber=0&sortBy=name&sortOrder=asc
+:scheme: https
+accept: application/json, text/plain, */*
+accept-encoding: gzip, deflate, br, zstd
+accept-language: en-US,en;q=0.9
+authorization: Bearer eyJraWQiOiI0RU9FYmJaTEtXQ2V6RXpTZk5WUUtDIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJ1bmlxdWVfaWQiOiIkMmEkMDckQTR1VjNDTEYwNnpxaUtrMGRtMEMyZXY2b2xmVkpZd3dwaWRoVkJXeVp5TUhpRzFwWWFDNzIiLCJ1c2VyX2ZuYW1lIjoiU2NvdHQiLCJ1c2VyX25hbWUiOiJzaGF5ZXNfY29tcGFzcyIsImlzcyI6Imh0dHBzOi8vZG1wLXVzLmluZm9ybWF0aWNhY2xvdWQuY29tL2lkZW50aXR5LXNlcnZpY2UiLCJub25jZSI6Ik5ueEdpOHU0ZjZRd29rcyIsInVzZXJfbG5hbWUiOiJIYXllcyIsImNsaWVudF9pZCI6ImNkbGdfbWdtdF9hcHAiLCJhdWQiOiJjZGxnX21nbXQiLCJ1c2VyX29yZ19pZCI6ImM1UHk3TjRrZlNBa2hLN3VvNXNsNnUiLCJ1c2VyX2lkIjoiMWZNQ3lmNWhma2ZsdnNFcm1UVENhZyIsIm9yZ19pZCI6ImM1UHk3TjRrZlNBa2hLN3VvNXNsNnUiLCJleHAiOjE3MzU1ODIxOTcsIm9yZ19uYW1lIjoiTkFER1NBIEhheWVzIENvbXBhc3MiLCJpYXQiOjE3MzU1ODAzOTcsImp0aSI6IjNHWWxEN1ZwZlFvZWZsSHV5UmJybUsifQ.nEmg344FyPclO8L_1WP-k6S8cv6rRPZBkHc0m6AfsgA77Nb8Nt_7QHfHF3YpMZgmMFWWPsBP1W7DyDBGNk6epQ
+cookie: USER_SESSION=9fPOODKww9pldmJCg18PMl; XSRF_TOKEN=4HgwFOZHI1ceboBcxwOaki
+correlation-id: 0f7b8dcd-ec9e-489f-8c5e-cdf3b4736708
+operation-id: 0f7b8dcd-ec9e-489f-8c5e-cdf3b4736708
+origin: https://mcc.dmp-us.informaticacloud.com
+priority: u=1, i
+referer: https://mcc.dmp-us.informaticacloud.com/
+sec-ch-ua: "Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+sec-fetch-dest: empty
+sec-fetch-mode: cors
+sec-fetch-site: same-site
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+x-infa-org-id: c5Py7N4kfSAkhK7uo5sl6u
+x-infa-tg-id: 7fed42dd-da0b-4cef-bf02-11ca737c671f
+x-requested-with: XMLHttpRequest
+x_infa_log_ctx: req_id=0f7b8dcd-ec9e-489f-8c5e-cdf3b4736708
+xsrf_token: 4HgwFOZHI1ceboBcxwOaki
+
+Response:
+[
+    {
+        "id": "8f98cb2f-365f-41c2-a632-51874a246731",
+        "name": "Blacklist Columns",
+        "description": null,
+        "normalizedName": "blacklist_columns",
+        "filename": "blacklist_v1.csv",
+        "uploadTime": 1731006335399,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "1b8fd46a-665e-4e50-a60b-6644ad019afc",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "email_columns",
+            "first_name_columns",
+            "last_name_columns"
+        ],
+        "origin": "USER_DEFINED"
+    },
+    {
+        "id": "13fddf18-f887-42a4-9cad-415d24bedb98",
+        "name": "Column Whitelist",
+        "description": "List of columns that are not sensitive",
+        "normalizedName": "column_whitelist",
+        "filename": "whitelist_v2.csv",
+        "uploadTime": 1731005118262,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "ccf88ffa-732a-446c-9115-fcfe8e7e5c7e",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "column_name"
+        ],
+        "origin": "USER_DEFINED"
+    },
+    {
+        "id": "8688473f-7cd6-4c3c-b10e-624e60866371",
+        "name": "General Whitelist",
+        "description": null,
+        "normalizedName": "general_whitelist",
+        "filename": "whitelist.csv",
+        "uploadTime": 1730386607615,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "c60322f1-7135-4c72-a66f-64478117be48",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "name_id"
+        ],
+        "origin": "USER_DEFINED"
+    },
+    {
+        "id": "5852b145-6bf3-442a-8e0c-f0f08e2cb36e",
+        "name": "lkp_birthdate_col_name",
+        "description": null,
+        "normalizedName": "lkp_birthdate_col_name",
+        "filename": "ref-dob-col-names.csv",
+        "uploadTime": 1723585787877,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "header_col_names"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "163e5c70-4ee3-472a-b525-a94e681bb6f5",
+        "name": "lkp_ccn_col",
+        "description": null,
+        "normalizedName": "lkp_ccn_col",
+        "filename": "ref-cc-num-col-names.csv",
+        "uploadTime": 1723585787663,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "header_col_names"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "ebe7eb15-aa2f-45f8-a22c-d0a30f62cc97",
+        "name": "lkp_cities_of_world",
+        "description": "List of cities of the world",
+        "normalizedName": "lkp_cities_of_world",
+        "filename": "lkp_cities_of_world.csv",
+        "uploadTime": 1723585791512,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "cities"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "8a3fc4eb-3923-4b6b-ad84-4c53556e6045",
+        "name": "lkp_company_tickers_us",
+        "description": null,
+        "normalizedName": "lkp_company_tickers_us",
+        "filename": "nasdaq-screener-test.csv",
+        "uploadTime": 1723585787295,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "symbol"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "0a237a49-d59b-4c8d-ad5d-59b908b3063b",
+        "name": "lkp_countries",
+        "description": "List of countries of the world.",
+        "normalizedName": "lkp_countries",
+        "filename": "lkp_countries.csv",
+        "uploadTime": 1723585788968,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "country"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "b68e6fb6-5e6b-4742-adc7-0954c8dca861",
+        "name": "lkp_ethnicity_world",
+        "description": "List of ethnicities in the world",
+        "normalizedName": "lkp_ethnicity_world",
+        "filename": "lkp_ethnicity_world.csv",
+        "uploadTime": 1723585789176,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "ethinicity"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "9d23cb3f-0402-4101-acd3-db7b551109dc",
+        "name": "lkp_fra_insee_depts",
+        "description": null,
+        "normalizedName": "lkp_fra_insee_depts",
+        "filename": "lkp_fra_insee_depts.csv",
+        "uploadTime": 1723585794530,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "insee_code",
+            "department"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "3fa8b986-3d1a-463f-b7c8-1c7e39a0951a",
+        "name": "lkp_gender",
+        "description": null,
+        "normalizedName": "lkp_gender",
+        "filename": "gender.csv",
+        "uploadTime": 1723585779699,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "gender"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "8d24ab7e-e7aa-480c-9856-ea8ca4542cdc",
+        "name": "lkp_gender_columns",
+        "description": null,
+        "normalizedName": "lkp_gender_columns",
+        "filename": "ref-gender-col-names.csv",
+        "uploadTime": 1723585788172,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "header_col_names"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "d1f5b9ab-f323-4bb9-9ca2-e3711587bbc9",
+        "name": "lkp_iban_countries",
+        "description": "List of IBAN countries, their ISO2CHAR country codes and the length of their respective IBAN numbers.",
+        "normalizedName": "lkp_iban_countries",
+        "filename": "lkp_iban_countries.csv",
+        "uploadTime": 1723585793655,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "country",
+            "code",
+            "length",
+            "codelength"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "66963818-913d-4a9a-ab3e-fddcf4922ec9",
+        "name": "lkp_indonesia_regioncode",
+        "description": "List of Indonesia province code.",
+        "normalizedName": "lkp_indonesia_regioncode",
+        "filename": "lkp_indonesia_provincecode.csv",
+        "uploadTime": 1723585794684,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "regioncode"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "a93705cb-9056-4bba-8f7a-75b6beedf511",
+        "name": "lkp_international_dial_codes_v3",
+        "description": "List of international telephone dialing codes.",
+        "normalizedName": "lkp_international_dial_codes_v3",
+        "filename": "lkp_international_dial_codes_v3.csv",
+        "uploadTime": 1723585793184,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "telcode"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "a46dd303-cde3-485b-b0bb-b0bb6f6a992c",
+        "name": "lkp_iso_3166_1",
+        "description": "The lookup table has 2chr, 3chr and 3 digit country codes.",
+        "normalizedName": "lkp_iso_3166_1",
+        "filename": "lkp_iso_3166_1.csv",
+        "uploadTime": 1723585788758,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "alpha2code",
+            "alpha3code",
+            "numeric"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "d36e8944-3269-4068-8991-6fe8fc29fc9d",
+        "name": "lkp_japan_bank_account_col_names",
+        "description": null,
+        "normalizedName": "lkp_japan_bank_account_col_names",
+        "filename": "ref-japan-bank-account-col-names.csv",
+        "uploadTime": 1723585795161,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "bnk_account_number_headers"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "728fe4fe-9e2c-4840-84d5-2c9d371e5761",
+        "name": "lkp_japan_dl_col_names",
+        "description": null,
+        "normalizedName": "lkp_japan_dl_col_names",
+        "filename": "ref-japan-dl-col-names.csv",
+        "uploadTime": 1723585795349,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "driv_lic_header"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "17edccd0-b34a-4196-8482-72129b8f6fdd",
+        "name": "lkp_japan_sin_col_names",
+        "description": null,
+        "normalizedName": "lkp_japan_sin_col_names",
+        "filename": "ref-japan-sin-col-names.csv",
+        "uploadTime": 1723585795518,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "header_col_names"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "88456090-b9e7-49ed-8343-87d4782ad5bc",
+        "name": "lkp_nzlbnkacnumbr",
+        "description": "The lookup table contains list of first 6 digit for NZ Bank account number based on Bank codes.",
+        "normalizedName": "lkp_nzlbnkacnumbr",
+        "filename": "lkp_nzlbnkacnumbr.csv",
+        "uploadTime": 1723585793917,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "digits"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "82530249-4f3d-42a8-8fc2-636316f33679",
+        "name": "lkp_religion_v3",
+        "description": "Religions of the world.",
+        "normalizedName": "lkp_religion_v3",
+        "filename": "lkp_religion_v3.csv",
+        "uploadTime": 1723585793422,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "religion"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "f351acd7-9086-4a51-9ba2-b482829c7de7",
+        "name": "lkp_russia_codes",
+        "description": "List of Russia region codes.",
+        "normalizedName": "lkp_russia_codes",
+        "filename": "lkp_russia_region_codes.csv",
+        "uploadTime": 1723585794916,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "region",
+            "code"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "b2eaf158-e636-43a1-a839-3c9630890509",
+        "name": "lkp_ssn_col_names",
+        "description": null,
+        "normalizedName": "lkp_ssn_col_names",
+        "filename": "ref-ssn-col-names.csv",
+        "uploadTime": 1723585788336,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "header_col_names"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "2b3fcbbf-8ea9-4b34-818c-c6b9cc96598c",
+        "name": "lkp_us_phn_no_col",
+        "description": null,
+        "normalizedName": "lkp_us_phn_no_col",
+        "filename": "ref-usphn-col-names.csv",
+        "uploadTime": 1723585788521,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "header_col_names"
+        ],
+        "origin": "OOTB"
+    },
+    {
+        "id": "d14ac547-25ba-4744-a686-555a9534faa5",
+        "name": "lkp_usa_city",
+        "description": "List of US cities.",
+        "normalizedName": "lkp_usa_city",
+        "filename": "lkp_usa_city.csv",
+        "uploadTime": 1723585789451,
+        "uploadedBy": "shayes_compass",
+        "lastJobId": "43d6372a-f34d-4171-84a0-337eed396ae6",
+        "status": "PUBLISHED",
+        "lastJobStatus": "COMPLETED",
+        "attributes": [
+            "city"
+        ],
+        "origin": "OOTB"
+    }
+]

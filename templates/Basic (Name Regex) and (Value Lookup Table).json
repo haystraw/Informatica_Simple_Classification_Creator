@@ -1,0 +1,47 @@
+    {
+        "name": "{Classification Name}",
+        "description": "{Classification Description}",
+        "sensitivity": "{Sensitivity Level}",
+        "classificationType": "DATA_ELEMENT",
+        "origin": "USER_DEFINED",
+        "expressionContext": {
+            "constants": null,
+            "lookupTableReferences": null
+        },
+        "expressionMode": "BASIC",
+        "basicExpressionElements": [
+            {
+                "type": "SIMPLE_PREDICATE",
+                "predicateValue": {
+                    "attribute": "NAME",
+                    "operator": "RLIKE",
+                    "valueType": "JAVA_REGEX",
+                    "values": [
+                        "{Name Regex}"
+                    ],
+                    "conformance": null,
+                    "weightedConformance": false
+                },
+                "elements": null
+            },
+            {
+                "type": "AND",
+                "predicateValue": null,
+                "elements": null
+            },
+            {
+                "type": "SIMPLE_PREDICATE",
+                "predicateValue": {
+                    "attribute": "FREQUENT_VALUES",
+                    "operator": "IN_LOOKUP_TABLE",
+                    "valueType": "LOOKUP_TABLE_COLUMN",
+                    "values": [
+                        "{Lookup Table and Column}"
+                    ],
+                    "conformance": "{Value Conformance}",
+                    "weightedConformance": true
+                },
+                "elements": null
+            }
+        ]
+    }

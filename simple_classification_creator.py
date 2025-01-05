@@ -9,8 +9,9 @@ import configparser
 import argparse
 import ast
 from datetime import datetime, timedelta
+from requests_toolbelt.multipart.encoder import MultipartEncoder
 
-version = 20241209
+version = 20250105
 print(f"INFO: Simple Classification Creator {version}")
 help_message = '''
 Optionally, you can set parameters:
@@ -84,6 +85,8 @@ templates_folder = script_location+'/templates'
 extracts_folder = script_location+'/extracts'
 current_classifications_file = "current_classifications.json"
 current_classifications_details_file = "current_classifications_details.json"
+current_lookup_file = "current_lookup_tables.json"
+current_lookup_details_file = "current_lookup_table_details.json"
 name_to_id_tokens = ["Classification Members"]
 
 default_delete_csv_file = script_location+"/xxxxxxxxxxxxxxx.csv"
@@ -96,6 +99,8 @@ payloads_folder = f'{script_location}/payloads/payloads_{timestamp}'
 os.makedirs(payloads_folder, exist_ok=True)
 
 total_payloads_to_load = []
+
+created_files = set()
 
 def parse_parameters():
     # Check for --help first
@@ -197,51 +202,154 @@ def process_json_error(text):
             pass
     return result_text
 
+def deleteLookupTable(id="", name=""):
+    getCredentials()
+    login() 
+
+    final_id=None
+    if len(id) < 2:
+        ## Check to see if the ID Already exists
+        final_id = search_lookup_id_by_name(name)
+    else:
+        final_id = id
+
+    try:
+        this_header = headers_bearer.copy()
+        this_header['X-INFA-PRODUCT-ID'] = 'MCC'
+
+
+        Result = requests.delete(cdgc_url+f"/ccgf-metadata-discovery/api/v1/lookuptables/{final_id}", headers=this_header)
+        resultJson = json.loads(Result.text)
+
+        this_status = resultJson['status']
+        this_message = resultJson['message']
+
+        if this_status == 'SUCCESS':
+            print(f"INFO: Lookup Table {name} deleted")
+        else:
+            print(f"ERROR: Lookup Table {name} Not deleted: {this_status} {this_message}")
+    except Exception as e:
+        print(f"ERROR: Error deleting Lookup Table {name}: {e}")    
+
+def getLookupTables():
+    getCredentials()
+    login()    
+
+#-- get custom data element classification
+    os.makedirs(extracts_folder, exist_ok=True) 
+    extracts_file_path = os.path.join(extracts_folder, current_lookup_file)
+    extracts_file_detail_path = os.path.join(extracts_folder, current_lookup_details_file)
+
+    try:
+        if os.path.isfile(extracts_file_path):
+            os.remove(extracts_file_path)
+    except Exception as e:
+        print(f"ERROR: Error deleting file {extracts_file_path}: {e}")
+
+    try:
+        if os.path.isfile(extracts_file_detail_path):
+            os.remove(extracts_file_detail_path)
+    except Exception as e:
+        print(f"ERROR: Error deleting file {extracts_file_detail_path}: {e}")        
+
+    try:
+        ## Result = requests.get(cdgc_url+"/ccgf-metadata-discovery/api/v1/classifications?classificationType=DATA_ELEMENT&pageSize=2000", headers=headers_bearer)
+        Result = requests.get(cdgc_url+"/ccgf-metadata-discovery/api/v1/lookuptables?pageSize=500&pageNumber=0&sortBy=name&sortOrder=asc", headers=headers_bearer)
+        resultJson = json.loads(Result.text)
+
+        with open(extracts_file_path, 'w') as extracts_file:
+            json.dump(resultJson, extracts_file, indent=4)  # Pretty-print with 4-space indentation  
+        created_files.add(extracts_file_path)
+
+        if when_extracting_fetch_details:
+            for i in resultJson:
+                if i['origin'] != "OOTB":
+                    extracts_file_detail_path = os.path.join(extracts_folder, current_lookup_details_file)
+                    detail_Result = requests.get(cdgc_url+"/ccgf-metadata-discovery/api/v1/lookuptables/"+i['id'], headers=headers_bearer,timeout=120)
+                    detailResultJson = json.loads(detail_Result.text)
+
+
+                    if os.path.exists(extracts_file_detail_path) and os.path.getsize(extracts_file_detail_path) > 0:
+                        # Read existing data
+                        with open(extracts_file_detail_path, 'r') as file:
+                            try:
+                                data = json.load(file)  # Load existing JSON array
+                            except json.JSONDecodeError:
+                                data = []  # Start a new array if the file is not valid JSON
+                    else:
+                        data = []  # Start a new array if the file doesn't exist or is empty
+
+                    # Append new data to the list
+                    data.append(detailResultJson)
+
+                    # Write the updated array back to the file
+                    with open(extracts_file_detail_path, 'w') as file:
+                        json.dump(data, file, indent=4)
+            created_files.add(extracts_file_detail_path)
+
+    except Exception as e:
+        print(f"ERROR: Error Extracting Lookup Tables: {e}")                         
+
+
 def getClassifications():
     getCredentials()
     login()    
 
 #-- get custom data element classification
     os.makedirs(extracts_folder, exist_ok=True) 
-    for filename in os.listdir(extracts_folder):
-        file_path = os.path.join(extracts_folder, filename)
-        try:
-            if os.path.isfile(file_path):
-                os.remove(file_path)  # Delete the file
-        except Exception as e:
-            print(f"ERROR: Error deleting file {file_path}: {e}")
 
-    ## Result = requests.get(cdgc_url+"/ccgf-metadata-discovery/api/v1/classifications?classificationType=DATA_ELEMENT&pageSize=2000", headers=headers_bearer)
-    Result = requests.get(cdgc_url+"/ccgf-metadata-discovery/api/v1/classifications?pageSize=2000", headers=headers_bearer)
-    resultJson = json.loads(Result.text)
     extracts_file_path = os.path.join(extracts_folder, current_classifications_file)
-    with open(extracts_file_path, 'w') as extracts_file:
-        json.dump(resultJson, extracts_file, indent=4)  # Pretty-print with 4-space indentation  
+    extracts_file_detail_path = os.path.join(extracts_folder, current_classifications_details_file)
 
-    if when_extracting_fetch_details:
-        for i in resultJson:
-            if i['origin'] != "OOTB":
-                extracts_file_detail_path = os.path.join(extracts_folder, current_classifications_details_file)
-                detail_Result = requests.get(cdgc_url+"/ccgf-metadata-discovery/api/v1/classifications/"+i['id'], headers=headers_bearer,timeout=120)
-                detailResultJson = json.loads(detail_Result.text)
+    try:
+        if os.path.isfile(extracts_file_path):
+            os.remove(extracts_file_path)
+    except Exception as e:
+        print(f"ERROR: Error deleting file {extracts_file_path}: {e}")
+
+    try:
+        if os.path.isfile(extracts_file_detail_path):
+            os.remove(extracts_file_detail_path)
+    except Exception as e:
+        print(f"ERROR: Error deleting file {extracts_file_detail_path}: {e}") 
+
+    try:
+        ## Result = requests.get(cdgc_url+"/ccgf-metadata-discovery/api/v1/classifications?classificationType=DATA_ELEMENT&pageSize=2000", headers=headers_bearer)
+        Result = requests.get(cdgc_url+"/ccgf-metadata-discovery/api/v1/classifications?pageSize=2000", headers=headers_bearer)
+        resultJson = json.loads(Result.text)
+        extracts_file_path = os.path.join(extracts_folder, current_classifications_file)
+        with open(extracts_file_path, 'w') as extracts_file:
+            json.dump(resultJson, extracts_file, indent=4)  # Pretty-print with 4-space indentation  
+        created_files.add(extracts_file_path)
+
+        if when_extracting_fetch_details:
+            for i in resultJson:
+                if i['origin'] != "OOTB":
+                    extracts_file_detail_path = os.path.join(extracts_folder, current_classifications_details_file)
+                    detail_Result = requests.get(cdgc_url+"/ccgf-metadata-discovery/api/v1/classifications/"+i['id'], headers=headers_bearer,timeout=120)
+                    detailResultJson = json.loads(detail_Result.text)
 
 
-                if os.path.exists(extracts_file_detail_path) and os.path.getsize(extracts_file_detail_path) > 0:
-                    # Read existing data
-                    with open(extracts_file_detail_path, 'r') as file:
-                        try:
-                            data = json.load(file)  # Load existing JSON array
-                        except json.JSONDecodeError:
-                            data = []  # Start a new array if the file is not valid JSON
-                else:
-                    data = []  # Start a new array if the file doesn't exist or is empty
+                    if os.path.exists(extracts_file_detail_path) and os.path.getsize(extracts_file_detail_path) > 0:
+                        # Read existing data
+                        with open(extracts_file_detail_path, 'r') as file:
+                            try:
+                                data = json.load(file)  # Load existing JSON array
+                            except json.JSONDecodeError:
+                                data = []  # Start a new array if the file is not valid JSON
+                    else:
+                        data = []  # Start a new array if the file doesn't exist or is empty
 
-                # Append new data to the list
-                data.append(detailResultJson)
+                    # Append new data to the list
+                    data.append(detailResultJson)
 
-                # Write the updated array back to the file
-                with open(extracts_file_detail_path, 'w') as file:
-                    json.dump(data, file, indent=4)
+                    # Write the updated array back to the file
+                    with open(extracts_file_detail_path, 'w') as file:
+                        json.dump(data, file, indent=4)
+            created_files.add(current_classifications_details_file)
+
+    except Exception as e:
+        print(f"ERROR: Error Extracting Classification Tables: {e}")                         
 
 def find_classification_id(name, file_path=os.path.join(extracts_folder, current_classifications_file)):
     def is_file_outdated(file_path):
@@ -281,6 +389,124 @@ def find_classification_id(name, file_path=os.path.join(extracts_folder, current
     # Return None if the name is still not found
     return None
 
+def search_lookup_id_by_name(lookup_name, file_path=os.path.join(extracts_folder, current_lookup_file)):
+
+    if not current_lookup_file in created_files:
+        getLookupTables()
+    
+
+    """
+    Looks up the 'id' for a given 'name' in a JSON file.
+
+    :param file_path: Path to the JSON file.
+    :param lookup_name: The name to look for in the JSON data.
+    :return: The 'id' associated with the given 'name', or None if not found.
+    """
+    try:
+        # Load the JSON file
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+        
+        # Iterate through the JSON objects to find the matching name
+        for entry in data:
+            if entry.get('name') == lookup_name:
+                return entry.get('id')  # Return the id if the name matches
+        
+        # Return None if no match is found
+        return None
+
+    except Exception as e:
+        print(f"ERROR: Error looking at lookup table by name: {e}")
+        return None
+
+def createLookupTable(name="", id="", desc="", filepath=""):
+    getCredentials()
+    login()
+
+    final_id=None
+    if len(id) < 2:
+        ## Check to see if the ID Already exists
+        final_id = search_lookup_id_by_name(name)
+
+    filename = os.path.basename(filepath)
+
+    result_text = None
+    if final_id:
+        ## If there is an ID, then update this one.
+        with open(filepath, 'rb') as f:
+            # Create a MultipartEncoder with the file and additional fields
+            encoder = MultipartEncoder(
+                fields={
+                    'file': (filename, f, 'text/csv'),
+                }
+            )
+
+            # Update headers to include the encoder's content type
+            this_header = headers_bearer.copy()
+            this_header['Content-Type'] = encoder.content_type
+            this_header['X-INFA-PRODUCT-ID'] = 'MCC'
+
+            # Perform the PUT request
+            response = requests.put(
+                f"{cdgc_url}/ccgf-metadata-discovery/api/v1/lookuptables/{final_id}/import",
+                headers=this_header,
+                data=encoder
+            )
+
+        result_text = response.text          
+    else:
+        ## If no ID, then create from scratch
+        # Open the CSV file in binary mode
+        with open(filepath, 'rb') as f:
+            # Create a MultipartEncoder with the file and additional fields
+            encoder = MultipartEncoder(
+                fields={
+                    'file': (filename, f, 'text/csv'),
+                    'description': desc,
+                    'name': name
+                }
+            )
+
+            # Update headers to include the encoder's content type
+            this_header = headers_bearer.copy()
+            this_header['Content-Type'] = encoder.content_type
+            this_header['X-INFA-PRODUCT-ID'] = 'MCC'
+
+            # Perform the POST request
+            response = requests.post(
+                f"{cdgc_url}/ccgf-metadata-discovery/api/v1/lookuptables/import",
+                headers=this_header,
+                data=encoder
+            )
+
+        result_text = response.text 
+    
+    try:        
+        result_json = json.loads(result_text) 
+        status = result_json.setdefault('status', 'unknown')
+        lastJobStatus = result_json.setdefault('lastJobStatus', 'unknown')
+        detail = result_json.setdefault('detail', 'unknown')
+
+        if status == 'unknown':
+            if final_id:
+                print(f"ERROR: Updating lookup table {name}: {result_text}")
+            else:
+                print(f"ERROR: Creating lookup table {name}: {result_text}")
+        elif status[0].isdigit():
+            if final_id:
+                print(f"ERROR: Updating lookup table {name}: {status} {detail}")
+            else:
+                print(f"ERROR: Creating lookup table {name}: {status} {detail}")
+        else:
+            if final_id:
+                print(f"INFO: Started update of Lookup Table: {name}: {status} {lastJobStatus}")
+            else:
+                print(f"INFO: Started creation of Lookup Table: {name}: {status} {lastJobStatus}")
+    except:
+        if final_id:
+            print(f"ERROR: Updating lookup table {name}: {result_text}")
+        else:
+            print(f"ERROR: Creating lookup table {name}: {result_text}")
 
 def generate_template_array(template_name, placeholder_name, values):
     # Path to the template JSON file
@@ -330,49 +556,62 @@ def create_payloads():
         # Process each row in the CSV
         for row in reader:
             template_name = row.get('Template')
-            classification_name = row.get('Classification Name', 'default_name')
+            classification_name = row.get('Classification Name', 'no_classification_name')
+            lookup_name = row.get('Lookup Table Name', 'no_lookup_name')
 
-            # Construct the template JSON file path
-            template_path = os.path.join(templates_folder, f"{template_name}.json")
+            if classification_name != 'no_classification_name':
+                # Construct the template JSON file path
+                template_path = os.path.join(templates_folder, f"{template_name}.json")
 
-            # Load the JSON template
-            if not os.path.exists(template_path):
-                print(f"ERROR: Template {template_name}.json not found in {templates_folder}. Skipping.")
-                continue
+                # Load the JSON template
+                if not os.path.exists(template_path):
+                    print(f"ERROR: Template {template_name}.json not found in {templates_folder}. Skipping.")
+                    continue
 
-            with open(template_path, 'r') as template_file:
-                template_json_str = template_file.read()
-                ## template_data = json.load(template_file)
+                with open(template_path, 'r') as template_file:
+                    template_json_str = template_file.read()
+                    ## template_data = json.load(template_file)
 
-            # Replace placeholders in the JSON template with CSV row data
-            ## template_json_str = json.dumps(template_data)
-            for key, value in row.items():
-                placeholder = "{"+key+"}"  # Format as placeholder (e.g., {Classification Name})
-                formated_value = value.replace('\\', '\\\\')
+                # Replace placeholders in the JSON template with CSV row data
+                ## template_json_str = json.dumps(template_data)
+                for key, value in row.items():
+                    placeholder = "{"+key+"}"  # Format as placeholder (e.g., {Classification Name})
+                    formated_value = value.replace('\\', '\\\\')
+                    
+                    if ":" in key and len(value) > 2:
+                        array_template = key.split(":")[0]
+                        array_placeholder = key.split(":")[1]
+                        array_value = generate_template_array(array_template, array_placeholder, formated_value)
+                        formated_value = json.dumps(array_value)  
+
+                    template_json_str = template_json_str.replace(placeholder, formated_value)
+
+                # Parse the updated JSON string back to a dictionary
+                ## modified_data = json.loads(template_json_str)
                 
-                if ":" in key and len(value) > 2:
-                    array_template = key.split(":")[0]
-                    array_placeholder = key.split(":")[1]
-                    array_value = generate_template_array(array_template, array_placeholder, formated_value)
-                    formated_value = json.dumps(array_value)  
 
-                template_json_str = template_json_str.replace(placeholder, formated_value)
+                # Construct the payload file path with the classification name
+                filename = re.sub(r'[<>:"/\\|?*\x00-\x1F]', '_', classification_name)
+                payload_file_path = os.path.join(payloads_folder, f"{filename}.json")
 
-            # Parse the updated JSON string back to a dictionary
-            ## modified_data = json.loads(template_json_str)
+                # Write the modified JSON data to a new file in the payloads folder
+                with open(payload_file_path, 'w') as payload_file:
+                    payload_file.write(template_json_str)
+                    ## json.dump(modified_data, payload_file, indent=4)
+                last_payload_path_part = os.path.basename(payloads_folder)
+                print(f"INFO: Created file: {last_payload_path_part}/{filename}.json")
+                this_dict = {'type': 'classification', 'name': classification_name, 'file_name': payload_file_path}
+                total_payloads_to_load.append(this_dict)
             
+            if lookup_name != 'no_lookup_name':
+                lookup_desc = row.get('Lookup Table Description', '')
+                lookup_file_raw = row.get('Lookup Table File', '')
+                lookup_file = script_location+"/"+lookup_file_raw
+                this_dict = {'type': 'lookup', 'name': lookup_name, 'file_name': lookup_file, 'lookup_desc': lookup_desc}
+                print(f"INFO: Queued creation of Lookup Table {lookup_name}")
+                total_payloads_to_load.append(this_dict)                
+                
 
-            # Construct the payload file path with the classification name
-            filename = re.sub(r'[<>:"/\\|?*\x00-\x1F]', '_', classification_name)
-            payload_file_path = os.path.join(payloads_folder, f"{filename}.json")
-
-            # Write the modified JSON data to a new file in the payloads folder
-            with open(payload_file_path, 'w') as payload_file:
-                payload_file.write(template_json_str)
-                ## json.dump(modified_data, payload_file, indent=4)
-            last_payload_path_part = os.path.basename(payloads_folder)
-            print(f"INFO: Created file: {last_payload_path_part}/{filename}.json")
-            total_payloads_to_load.append(payload_file_path)
 
 def delete_classifications():
     global default_delete_csv_file
@@ -382,11 +621,17 @@ def delete_classifications():
         reader = csv.DictReader(csvfile)
         # Process each row in the CSV
         for row in reader:
-            classification_name = row.get('Classification Name')
+            classification_name = row.get('Classification Name', 'no_classification_name')
+            lookup_name = row.get('Lookup Table Name', 'no_lookup_name')
             action = row.get('Action', 'NOTHING')
-            if action == 'DELETE':
+            if action == 'DELETE' and classification_name != 'no_classification_name':
                 delete_classification(classification_name)
-                
+            if action == 'DELETE' and lookup_name != 'no_lookup_name':
+                deleteLookupTable(name=lookup_name)
+
+
+
+
 def load_credentials_from_home():
     global default_user, default_pwd, default_pod
 
@@ -555,6 +800,7 @@ def main():
     if len(sys.argv) > 1:
         if sys.argv[1].lower() == 'extract':
             getClassifications()
+            getLookupTables()
             if pause_at_end:
                 input(f"Press any Key to exit...")
             quit()
@@ -580,10 +826,20 @@ def main():
         if pause_before_loading:
             input(f"Press any Key to begin Loading...")
         print(f"INFO: Loading Files...")
-        for filename in total_payloads_to_load:
-            # Check if it is a file (not a subdirectory)
-            if os.path.isfile(os.path.join(payloads_folder, filename)):
-                load_classification_file(os.path.join(payloads_folder, filename))
+        for this_item in total_payloads_to_load:
+            if this_item['type'] == 'classification':
+                filename = this_item['file_name']
+                # Check if it is a file (not a subdirectory)
+                if os.path.isfile(os.path.join(payloads_folder, filename)):
+                    load_classification_file(os.path.join(payloads_folder, filename))
+            if this_item['type'] == 'lookup':
+                lookup_name = this_item['name']
+                lookup_desc = this_item['lookup_desc']
+                filepath = this_item['file_name']
+                # Check if it is a file (not a subdirectory)
+                if os.path.isfile(filepath):
+                    createLookupTable(name=lookup_name, desc=lookup_desc, filepath=filepath)
+
     if pause_at_end:
         input(f"Press any Key to exit...")
 

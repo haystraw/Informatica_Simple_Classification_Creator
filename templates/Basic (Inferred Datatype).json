@@ -1,0 +1,28 @@
+{
+	"name": "{Classification Name}",
+	"description": "{Classification Description}",
+	"sensitivity": "NONE",
+	"classificationType": "DATA_ELEMENT",
+	"origin": "USER_DEFINED",
+	"expressionContext": {
+		"constants": null,
+		"lookupTableReferences": null
+	},
+	"expressionMode": "BASIC",
+	"basicExpressionElements": [
+		{
+			"type": "SIMPLE_PREDICATE",
+			"predicateValue": {
+				"attribute": "INFERRED_DATATYPE",
+				"operator": "==",
+				"valueType": "ENUM",
+				"values": [
+					"{Inferred Datatype}"
+				],
+				"conformance": null,
+				"weightedConformance": false
+			},
+			"elements": null
+		}
+	]
+}
