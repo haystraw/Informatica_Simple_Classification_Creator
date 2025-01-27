@@ -8,10 +8,11 @@ import re
 import configparser
 import argparse
 import ast
+import time
 from datetime import datetime, timedelta
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
-version = 20250105
+version = 20250127
 print(f"INFO: Simple Classification Creator {version}")
 help_message = '''
 Optionally, you can set parameters:
@@ -42,10 +43,17 @@ Optionally, you can set parameters:
             --csv_file=my_classifications.csv
 
    --csv_file_path
-         You can specify the config csv file to use directly, by setting it here. 
+        You can specify the config csv file to use directly, by setting it here. 
         Setting it with this option, will allow you to specify the full path (use linux forward slashes)
         Example:
-            --csv_file_path=c:/junk/my_classifications.csv       
+            --csv_file_path=c:/junk/my_classifications.csv 
+   
+   --skip_existing_lookup_tables      
+        If a Lookup table is defined, and it already exists, you can specify whether to upddate
+        the lookup table, or skip it. If set to True, it will skip existing lookup tables. 
+        If set to False (default), it will update the lookup table.
+        Example:
+            --skip_existing_lookup_tables=True
 
 Direct Command line options:
    delete
@@ -75,6 +83,7 @@ create_payloads_only = False
 when_extracting_fetch_details = True
 show_raw_errors = False
 pause_at_end = True
+skip_existing_lookup_tables = False
 
 
 # Paths
@@ -432,6 +441,9 @@ def createLookupTable(name="", id="", desc="", filepath=""):
 
     result_text = None
     if final_id:
+        if skip_existing_lookup_tables:
+            print(f"INFO: Lookup Table {name} already exists, skipping")
+            return
         ## If there is an ID, then update this one.
         with open(filepath, 'rb') as f:
             # Create a MultipartEncoder with the file and additional fields
@@ -485,6 +497,7 @@ def createLookupTable(name="", id="", desc="", filepath=""):
         result_json = json.loads(result_text) 
         status = result_json.setdefault('status', 'unknown')
         lastJobStatus = result_json.setdefault('lastJobStatus', 'unknown')
+        lastJobId = result_json.setdefault('lastJobId', 'unknown')
         detail = result_json.setdefault('detail', 'unknown')
 
         if status == 'unknown':
@@ -498,10 +511,12 @@ def createLookupTable(name="", id="", desc="", filepath=""):
             else:
                 print(f"ERROR: Creating lookup table {name}: {status} {detail}")
         else:
+
             if final_id:
                 print(f"INFO: Started update of Lookup Table: {name}: {status} {lastJobStatus}")
             else:
                 print(f"INFO: Started creation of Lookup Table: {name}: {status} {lastJobStatus}")
+            monitor_job(lastJobId)
     except:
         if final_id:
             print(f"ERROR: Updating lookup table {name}: {result_text}")
@@ -842,6 +857,62 @@ def main():
 
     if pause_at_end:
         input(f"Press any Key to exit...")
+def print_message_loop(message, state=None, is_first_message=False, is_final_message=False):
+    """
+    Prints messages, appending dots for repeated messages, or resets for new messages.
+    """
+    if state is None:
+        state = {"last_message": None, "repeat_counter": 0}
+
+    if message == state["last_message"]:
+        if state["repeat_counter"] < 30:
+            state["repeat_counter"] += 1
+            print('.', end='', flush=True)
+        else:
+            state["repeat_counter"] = 1
+            print(f"\n{message}", end='', flush=True)
+    else:
+        if not is_first_message:
+            print()  # Print a new line for a new message
+        state["repeat_counter"] = 0
+        print(message, end='', flush=True)
+
+    state["last_message"] = message
+
+    if is_final_message:
+        print()  # Print a final newline
+
+def monitor_job(jobId):
+    """
+    Monitors a job by polling its status every 10 seconds until completion or failure.
+    """
+    try:
+        tracking_url = f"{cdgc_url}/ccgf-orchestration-management-api-server/api/v1/jobs/{jobId}?aggregateResourceUsage=false&expandChildren="
+
+        state = {"last_message": None, "repeat_counter": 0}
+        job_loop = True
+
+        while job_loop:
+            time.sleep(10)
+            get_url = tracking_url
+            this_header = headers_bearer.copy()
+            response = requests.get(get_url, headers=this_header)
+
+            if response.status_code in [200, 201, 202, 204]:
+                result_json = response.json()
+                job_status = result_json.get('status')
+
+                # Check terminal states
+                if any(term in job_status for term in ["COMPLETED", "ERROR", "CANCELLED", "FAILED"]):
+                    print_message_loop(f"    {job_status}", state=state, is_final_message=True)
+                    job_loop = False
+                else:
+                    print_message_loop(f"    {job_status}", state=state)
+            else:
+                print(f"\nERROR: with tracking the scan: {response.text}")
+                job_loop = False  # Exit the loop on failure
+    except Exception as e:
+        print(f"\nERROR: with tracking the scan: {e}")
 
 
 if __name__ == "__main__":
